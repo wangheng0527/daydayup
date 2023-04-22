@@ -70,9 +70,13 @@
 ```Java
 package com.example.demo;
 
+import com.example.demo.mapper.UserMapper;
+import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.codegen.Generator;
+import com.mybatisflex.codegen.config.ColumnConfig;
 import com.mybatisflex.codegen.config.GlobalConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -109,11 +113,28 @@ class SpringBootMybatisFlexApplicationTests {
         globalConfig.setMapperPackage("com.example.demo.mapper");
 
         //可以单独配置某个列
-//        ColumnConfig columnConfig = new ColumnConfig();
-//        columnConfig.setColumnName("tenant_id");
-//        columnConfig.setLarge(true);
-//        columnConfig.setVersion(true);
-//        globalConfig.addColumnConfig("account", columnConfig);
+        ColumnConfig columnUuidConfig = new ColumnConfig();
+        columnUuidConfig.setColumnName("uuid");
+        columnUuidConfig.setPrimaryKey(true);
+        columnUuidConfig.setKeyType(KeyType.Generator);
+
+        ColumnConfig columnDeletedConfig = new ColumnConfig();
+        columnDeletedConfig.setColumnName("deleted");
+        columnDeletedConfig.setOnInsertValue("0");
+
+        ColumnConfig columnCreateTimeConfig = new ColumnConfig();
+        columnCreateTimeConfig.setColumnName("create_time");
+        columnCreateTimeConfig.setOnInsertValue("now()");
+
+        ColumnConfig columnUpdateTimeConfig = new ColumnConfig();
+        columnUpdateTimeConfig.setColumnName("update_time");
+        columnUpdateTimeConfig.setOnInsertValue("now()");
+        columnUpdateTimeConfig.setOnUpdateValue("now()");
+
+        globalConfig.addColumnConfig("t_user", columnUuidConfig);
+        globalConfig.addColumnConfig("t_user", columnDeletedConfig);
+        globalConfig.addColumnConfig("t_user", columnCreateTimeConfig);
+        globalConfig.addColumnConfig("t_user", columnUpdateTimeConfig);
 
         //通过 datasource 和 globalConfig 创建代码生成器
         Generator generator = new Generator(dataSource, globalConfig);
@@ -123,6 +144,7 @@ class SpringBootMybatisFlexApplicationTests {
     }
 
 }
+
 ```
 
 生成的`entity、mapper`：

@@ -1,13 +1,16 @@
 package com.example.demo.entity;
 
+import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
-import java.io.Serializable;
-import java.sql.Timestamp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * 用户信息表
@@ -22,7 +25,7 @@ public class User implements Serializable {
     /**
      * 用户唯一表示UUID
      */
-    @Id
+    @Id(keyType = KeyType.Generator, value = "uuid")
     private String uuid;
 
     /**
@@ -43,16 +46,19 @@ public class User implements Serializable {
     /**
      * 逻辑删除标识
      */
+    @Column(onInsertValue = "0")
     private String deleted;
 
     /**
      * 用户信息创建时间
      */
+    @Column(onInsertValue = "now()")
     private Timestamp createTime;
 
     /**
      * 用户信息最近一次被修改时间
      */
+    @Column(onInsertValue = "now()", onUpdateValue = "now()")
     private Timestamp updateTime;
 
 }
