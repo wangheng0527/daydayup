@@ -255,4 +255,4 @@ class SpringBootMybatisFlexApplicationTests {
 
 ![image-20230412211409719](D:\my-development\my-picture\typora\image-20230412211409719.png)
 
-![image-20230422224458166](D:\my-development\my-github\README.assets\image-20230422224458166.png)
+![image-20230422224636566](README.assets/image-20230422224636566.png)
