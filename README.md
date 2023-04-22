@@ -254,5 +254,3 @@ class SpringBootMybatisFlexApplicationTests {
 3、`git commit -m "commit comment"`：将所有已`add`的文件提交到本地仓库：
 
 ![image-20230412211409719](D:\my-development\my-picture\typora\image-20230412211409719.png)
-
-![image-20230422224636566](README.assets/image-20230422224636566.png)
