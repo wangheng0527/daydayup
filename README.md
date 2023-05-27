@@ -1,3 +1,231 @@
+# SpringBoot
+
+## 请求前缀
+
+### SpringBoot2.x
+
+```yaml
+server:
+  servlet:
+    context-path: /api/v1
+```
+
+### SpringBoot3.x
+
+```java
+package com.example.demo.advice;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+/**
+ * @author wanngheng
+ * @date 2023/4/26 21:54
+ */
+@Configuration
+public class ControllerApiPrefixAdvice implements WebMvcConfigurer {
+
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+        configurer.addPathPrefix("/api/v1", c -> c.isAnnotationPresent(RestController.class));
+    }
+}
+```
+
+## 自定义异常
+
+1、封装结果：
+
+```java
+package com.example.demo.exception;
+
+import lombok.Data;
+
+/**
+ * @author wanngheng
+ * @date 2023/4/23 21:50
+ */
+@Data
+public class Result {
+
+    private String code;
+
+    private String msg;
+
+    private Object data;
+
+    public Result(Object data) {
+        this.code = ExceptionEnum.SUCCESS.getCode();
+        this.msg = ExceptionEnum.SUCCESS.getMsg();
+        this.data = data;
+    }
+
+    public Result(String code, String msg, Object data) {
+        this.code = code;
+        this.msg = msg;
+        this.data = data;
+    }
+}
+```
+
+2、自定义异常枚举类的统一接口：
+
+```java
+package com.example.demo.exception;
+
+/**
+ * @author wanngheng
+ * @date 2023/4/26 21:15
+ */
+public interface StatusCode {
+
+    /**
+     * 获取状态码
+     *
+     * @return code
+     */
+    String getCode();
+
+    /**
+     * 获取异常状态信息
+     *
+     * @return msg
+     */
+    String getMsg();
+}
+```
+
+3、自定义枚举类：
+
+```java
+package com.example.demo.exception;
+
+import lombok.Getter;
+
+/**
+ * @author wanngheng
+ * @date 2023/4/26 21:18
+ */
+@Getter
+public enum ExceptionEnum implements StatusCode {
+
+    /**
+     * 请求成功
+     */
+    SUCCESS("200", "请求成功"),
+
+    PACKAGE_RESPONSE_EXCEPTION("TSP0010001", "包装返回体异常")
+    ;
+
+    private final String code;
+
+    private final String msg;
+
+    ExceptionEnum(String code, String msg) {
+        this.code = code;
+        this.msg = msg;
+    }
+}
+```
+
+4、自定义异常：
+
+```java
+package com.example.demo.exception;
+
+import lombok.Getter;
+
+/**
+ * @author wanngheng
+ * @date 2023/4/26 21:35
+ */
+@Getter
+public class CustomiseException extends RuntimeException {
+
+    private final String code;
+
+    private final String msg;
+
+    private final String log;
+
+    public CustomiseException(StatusCode statusCode) {
+        super(statusCode.getMsg());
+        this.code = statusCode.getCode();
+        this.msg = statusCode.getMsg();
+        this.log = null;
+    }
+
+    public CustomiseException(StatusCode statusCode, String log) {
+        super(statusCode.getMsg());
+        this.code = statusCode.getCode();
+        this.msg = statusCode.getMsg();
+        this.log = log;
+    }
+}
+```
+
+5、自定义异常处理器：
+
+```java
+package com.example.demo.advice;
+
+import com.example.demo.exception.CustomiseException;
+import com.example.demo.exception.Result;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+/**
+ * @author wanngheng
+ * @date 2023/4/26 21:39
+ */
+@RestControllerAdvice
+public class CustomiseExceptionAdvice {
+
+    @ExceptionHandler(CustomiseException.class)
+    public Result customiseExceptionHandler(CustomiseException e) {
+        return new Result(e.getCode(), e.getMsg(), e.getLog());
+    }
+}
+```
+
+6、测试：
+
+```java 
+package com.example.demo.controller;
+
+import com.example.demo.domain.UserResponse;
+import com.example.demo.exception.CustomiseException;
+import com.example.demo.exception.ExceptionEnum;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author wanngheng
+ * @date 2023/4/23 21:12
+ */
+@RestController
+@RequestMapping("/user")
+public class UserController {
+
+    @GetMapping("/query/id")
+    public UserResponse queryById(String id) {
+        throw new CustomiseException(ExceptionEnum.PACKAGE_RESPONSE_EXCEPTION, "error...");
+        // return new UserResponse();
+    }
+
+}
+```
+
+![image-20230426220618795](D:\my-development\my-picture\typora\image-20230426220618795.png)
+
+
+
 # MybatisFlex
 
 0、`https://mybatis-flex.com/`

@@ -1,14 +1,12 @@
-package com.example.demo;
+package com.example.flex;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * @author wangheng
+ * @author 28124
  */
 @SpringBootApplication
-@MapperScan("com.example.demo.mapper")
 public class SpringBootMybatisFlexApplication {
 
     public static void main(String[] args) {
